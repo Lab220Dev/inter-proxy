@@ -1,23 +1,27 @@
 const express = require('express');
-const https = require('https');
+const https   = require('https');
+const app     = express();
 
-const app = express();
 app.use(express.json());
 
-const API_KEY = process.env.PROXY_API_KEY;
+const API_KEY    = process.env.PROXY_API_KEY;
 const INTER_HOST = 'cdpj.partners.bancointer.com.br';
 
-// Rotas públicas
-app.get('/ping', (req, res) => res.send('pong'));
-app.get('/saldo-test', (req, res) => res.send('saldo-test ok'));
+// ─── Rotas públicas ───────────────────────────────────────────────────────────
 
-// Middleware de autenticação
+app.get('/ping',       (_req, res) => res.send('pong'));
+app.get('/saldo-test', (_req, res) => res.send('saldo-test ok'));
+
+// ─── Middleware de autenticação ───────────────────────────────────────────────
+
 app.use((req, res, next) => {
   if (req.headers['x-api-key'] !== API_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
 });
+
+// ─── Helper: requisição mTLS para o Inter ────────────────────────────────────
 
 function interRequest(path, method, headers, body) {
   return new Promise((resolve, reject) => {
@@ -31,7 +35,7 @@ function interRequest(path, method, headers, body) {
       method,
       headers,
       cert: certPem,
-      key: keyPem,
+      key:  keyPem,
       rejectUnauthorized: true,
     };
 
@@ -47,24 +51,53 @@ function interRequest(path, method, headers, body) {
   });
 }
 
+// ─── POST /token ──────────────────────────────────────────────────────────────
+
 app.post('/token', async (req, res) => {
-  const { clientId, clientSecret, scope } = req.body;
-  const body = new URLSearchParams({
-    client_id: clientId,
-    client_secret: clientSecret,
-    grant_type: 'client_credentials',
-    ...(scope ? { scope } : {}),
-  }).toString();
+  try {
+    const { clientId, clientSecret, scope } = req.body;
 
-  const result = await interRequest('/oauth/v2/token', 'POST', {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Content-Length': Buffer.byteLength(body).toString(),
-  }, body);
+    const body = new URLSearchParams({
+      client_id:     clientId,
+      client_secret: clientSecret,
+      grant_type:    'client_credentials',
+      ...(scope ? { scope } : {}),
+    }).toString();
 
-  res.status(result.status).send(result.body);
+    const result = await interRequest('/oauth/v2/token', 'POST', {
+      'Content-Type':   'application/x-www-form-urlencoded',
+      'Content-Length': Buffer.byteLength(body).toString(),
+    }, body);
+
+    res.status(result.status).send(result.body);
+  } catch (err) {
+    console.error('[/token]', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
+// ─── POST /saldo ──────────────────────────────────────────────────────────────
+
 app.post('/saldo', async (req, res) => {
-  const { token, data } = req.body;
-  const result = await interRequest(
-    `/ba
+  try {
+    const { token, data } = req.body;
+
+    const query  = data ? `?dataSaldo=${data}` : '';
+    const path   = `/banking/v3/saldo${query}`;
+
+    const result = await interRequest(path, 'GET', {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type':  'application/json',
+    });
+
+    res.status(result.status).send(result.body);
+  } catch (err) {
+    console.error('[/saldo]', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── Servidor ─────────────────────────────────────────────────────────────────
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Proxy Inter rodando na porta ${PORT}`));
