@@ -1,0 +1,1 @@
+'{"clientId":"03b724a2-cb92-4934-8c9c-2b1cf96bf475","clientSecret":"542a214d-70e7-4e5e-923f-4a32f34d0813","scope":"extrato.read"}' | Out-File -Encoding utf8 body.json
