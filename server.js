@@ -7,6 +7,9 @@ app.use(express.json());
 const API_KEY = process.env.PROXY_API_KEY;
 const INTER_HOST = 'cdpj.partners.bancointer.com.br';
 
+// Rota pública de teste
+app.get('/ping', (req, res) => res.send('pong'));
+
 // Middleware de autenticação simples
 app.use((req, res, next) => {
   if (req.headers['x-api-key'] !== API_KEY) {
@@ -70,5 +73,7 @@ app.post('/saldo', async (req, res) => {
   );
   res.status(result.status).send(result.body);
 });
+
 app.get('/ping', (req, res) => res.send('pong'));
+
 app.listen(process.env.PORT || 3000, () => console.log('Proxy rodando'));
