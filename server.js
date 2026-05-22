@@ -70,5 +70,5 @@ app.post('/saldo', async (req, res) => {
   );
   res.status(result.status).send(result.body);
 });
-
+app.get('/ping', (req, res) => res.send('pong'));
 app.listen(process.env.PORT || 3000, () => console.log('Proxy rodando'));
