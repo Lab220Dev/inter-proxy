@@ -62,8 +62,8 @@ app.post('/token', async (req, res) => {
 });
 
 // Rota: saldo
-app.get('/saldo', async (req, res) => {
-  const { token, data } = req.query;
+app.post('/saldo', async (req, res) => {
+  const { token, data } = req.body;
   const result = await interRequest(
     `/banking/v3/saldo?dataSaldo=${data}`, 'GET',
     { 'Authorization': `Bearer ${token}` }, null
