@@ -74,6 +74,10 @@ app.post('/saldo', async (req, res) => {
   res.status(result.status).send(result.body);
 });
 
-app.get('/ping', (req, res) => res.send('pong'));
-
-app.listen(process.env.PORT || 3000, () => console.log('Proxy rodando'));
+app.listen(process.env.PORT || 3000, () => {
+  console.log('Proxy rodando');
+  console.log('Rotas registradas:');
+  app._router.stack
+    .filter(r => r.route)
+    .forEach(r => console.log(Object.keys(r.route.methods).join(',').toUpperCase(), r.route.path));
+});
