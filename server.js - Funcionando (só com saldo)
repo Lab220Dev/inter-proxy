@@ -82,8 +82,8 @@ app.post('/saldo', async (req, res) => {
   try {
     const { token, data } = req.body;
 
-    const query  = data ? `?dataSaldo=${data}` : '';
-    const path   = `/banking/v3/saldo${query}`;
+    const query = data ? `?dataSaldo=${data}` : '';
+    const path  = `/banking/v2/saldo${query}`;
 
     const result = await interRequest(path, 'GET', {
       'Authorization': `Bearer ${token}`,
