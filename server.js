@@ -95,7 +95,10 @@ app.get('/diagnostico', (req,res) => res.json({rotas:['saldo','extrato','cobranc
 app.post('/extrato/completo', async (req, res) => { const { token, dataInicio, dataFim, pagina, tamanhoPagina } = req.body; await proxy(res, () => interRequest('/banking/v2/extrato/completo' + qs({ dataInicio, dataFim, pagina, tamanhoPagina }), 'GET', bankHeaders(token), null)); });
 app.post('/extrato/completo', async (req, res) => { const { token, dataInicio, dataFim, pagina, tamanhoPagina } = req.body; await proxy(res, () => interRequest('/banking/v2/extrato/completo' + qs({ dataInicio, dataFim, pagina, tamanhoPagina }), 'GET', bankHeaders(token), null)); });
 app.post('/extrato/comprovante', async (req, res) => { const { token, idTransacao } = req.body; await proxy(res, () => interRequest('/banking/v2/extrato/' + encodeURIComponent(idTransacao) + '/comprovante', 'GET', bankHeaders(token), null)); });
+app.post('/pagamento/listar', async (req, res) => { const { token, dataInicio, dataFim, filtrarDataPor, tipoPagamento, situacao, pagina, tamanhoPagina } = req.body; await proxy(res, () => interRequest('/banking/v2/pagamento' + qs({ filtrarDataPor: filtrarDataPor||'INCLUSAO', dataInicio, dataFim, tipoPagamento, situacao, pagina, tamanhoPagina }), 'GET', bankHeaders(token), null)); });
+app.post('/pagamento/comprovante', async (req, res) => { const { token, codigoTransacao } = req.body; await proxy(res, () => interRequest('/banking/v2/pagamento/' + codigoTransacao + '/comprovante', 'GET', bankHeaders(token), null)); });
 app.listen(process.env.PORT || 3000, () => console.log(`Proxy Inter rodando na porta ${process.env.PORT || 3000}`));
+
 
 
 
