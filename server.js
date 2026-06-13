@@ -119,6 +119,28 @@ app.post('/cobranca/callback', async (req, res) => {
   await proxy(res, () => interRequest(`/cobranca/v3/cobrancas/webhook/callbacks${qs({ dataHoraInicio, dataHoraFim, itensPorPagina, paginaAtual })}`, 'GET', cobHeaders(token), null));
 });
 
+// POST /extrato — Consultar extrato
+app.post('/extrato', async (req, res) => {
+  const { token, dataInicio, dataFim, tipo, pagina } = req.body;
+  await proxy(res, () => interRequest(
+    `/banking/v3/extrato${qs({ dataInicio, dataFim, tipo, pagina })}`,
+    'GET',
+    { 'Authorization': `Bearer ${token}`, 'x-conta-corrente': CONTA },
+    null
+  ));
+});
+
+// GET /saldo — compatibilidade retroativa (query params)
+app.get('/saldo', async (req, res) => {
+  const { token, dataSaldo } = req.query;
+  await proxy(res, () => interRequest(
+    `/banking/v3/saldo${qs({ dataSaldo })}`,
+    'GET',
+    { 'Authorization': `Bearer ${token}`, 'x-conta-corrente': CONTA },
+    null
+  ));
+});
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Proxy Inter rodando na porta ${process.env.PORT || 3000}`);
 });
+
