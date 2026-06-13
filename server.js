@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const https = require('https');
 const app = express();
 app.use(express.json());
@@ -42,11 +42,11 @@ app.post('/token', async (req, res) => {
 });
 app.post('/saldo', async (req, res) => {
   const { token, dataSaldo } = req.body;
-  await proxy(res, () => interRequest(`/banking/v3/saldo${qs({ dataSaldo })}`, 'GET', bankHeaders(token), null));
+  await proxy(res, () => interRequest(`/banking/v2/saldo${qs({ dataSaldo })}`, 'GET', bankHeaders(token), null));
 });
 app.post('/extrato', async (req, res) => {
   const { token, dataInicio, dataFim, tipo, pagina } = req.body;
-  await proxy(res, () => interRequest(`/banking/v3/extrato${qs({ dataInicio, dataFim, tipo, pagina })}`, 'GET', bankHeaders(token), null));
+  await proxy(res, () => interRequest(`/banking/v2/extrato${qs({ dataInicio, dataFim, tipo, pagina })}`, 'GET', bankHeaders(token), null));
 });
 app.post('/cobranca/emitir', async (req, res) => {
   const { token, ...boleto } = req.body;
@@ -91,4 +91,7 @@ app.post('/cobranca/callback', async (req, res) => {
   const { token, dataHoraInicio, dataHoraFim, itensPorPagina, paginaAtual } = req.body;
   await proxy(res, () => interRequest(`/cobranca/v3/cobrancas/webhook/callbacks${qs({ dataHoraInicio, dataHoraFim, itensPorPagina, paginaAtual })}`, 'GET', cobHeaders(token), null));
 });
+app.get('/diagnostico', (req,res) => res.json({rotas:['saldo','extrato','cobranca']}));
 app.listen(process.env.PORT || 3000, () => console.log(`Proxy Inter rodando na porta ${process.env.PORT || 3000}`));
+
+
