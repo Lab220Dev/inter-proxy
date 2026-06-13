@@ -70,13 +70,16 @@ app.post('/cobranca/emitir', async (req, res) => {
 });
 
 app.post('/cobranca/listar', async (req, res) => {
-  const { token, dataInicial, dataFinal, situacao, nome, cpfCnpjDevedor, itensPorPagina, paginaAtual } = req.body;
-  await proxy(res, () => interRequest(`/cobranca/v3/cobrancas${qs({ dataInicial, dataFinal, situacao, nome, cpfCnpjDevedor, itensPorPagina, paginaAtual })}`, 'GET', cobHeaders(token), null));
+  const { token, dataInicial, dataFinal, filtrarDataPor, situacao, nome, cpfCnpjDevedor, itensPorPagina, paginaAtual } = req.body;
+  await proxy(res, () => interRequest(
+    `/cobranca/v3/cobrancas${qs({ dataInicial, dataFinal, filtrarDataPor, situacao, nome, cpfCnpjDevedor, itensPorPagina, paginaAtual })}`,
+    'GET', cobHeaders(token), null
+  ));
 });
 
 app.post('/cobranca/sumario', async (req, res) => {
-  const { token, dataInicial, dataFinal, situacao } = req.body;
-  await proxy(res, () => interRequest(`/cobranca/v3/cobrancas/sumario${qs({ dataInicial, dataFinal, situacao })}`, 'GET', cobHeaders(token), null));
+  const { token, dataInicial, dataFinal, filtrarDataPor, situacao } = req.body;
+  await proxy(res, () => interRequest(`/cobranca/v3/cobrancas/sumario${qs({ dataInicial, dataFinal, filtrarDataPor, situacao })}`, 'GET', cobHeaders(token), null));
 });
 
 app.post('/cobranca/consultar', async (req, res) => {
