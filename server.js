@@ -94,7 +94,9 @@ app.post('/cobranca/callback', async (req, res) => {
 app.get('/diagnostico', (req,res) => res.json({rotas:['saldo','extrato','cobranca']}));
 app.post('/extrato/completo', async (req, res) => { const { token, dataInicio, dataFim, pagina, tamanhoPagina } = req.body; await proxy(res, () => interRequest('/banking/v2/extrato/completo' + qs({ dataInicio, dataFim, pagina, tamanhoPagina }), 'GET', bankHeaders(token), null)); });
 app.post('/extrato/completo', async (req, res) => { const { token, dataInicio, dataFim, pagina, tamanhoPagina } = req.body; await proxy(res, () => interRequest('/banking/v2/extrato/completo' + qs({ dataInicio, dataFim, pagina, tamanhoPagina }), 'GET', bankHeaders(token), null)); });
+app.post('/extrato/comprovante', async (req, res) => { const { token, idTransacao } = req.body; await proxy(res, () => interRequest('/banking/v2/extrato/' + encodeURIComponent(idTransacao) + '/comprovante', 'GET', bankHeaders(token), null)); });
 app.listen(process.env.PORT || 3000, () => console.log(`Proxy Inter rodando na porta ${process.env.PORT || 3000}`));
+
 
 
 
