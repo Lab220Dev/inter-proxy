@@ -95,3 +95,4 @@ app.get('/diagnostico', (req,res) => res.json({rotas:['saldo','extrato','cobranc
 app.listen(process.env.PORT || 3000, () => console.log(`Proxy Inter rodando na porta ${process.env.PORT || 3000}`));
 
 
+
