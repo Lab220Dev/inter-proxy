@@ -97,7 +97,12 @@ app.post('/extrato/completo', async (req, res) => { const { token, dataInicio, d
 app.post('/extrato/comprovante', async (req, res) => { const { token, idTransacao } = req.body; await proxy(res, () => interRequest('/banking/v2/extrato/' + encodeURIComponent(idTransacao) + '/comprovante', 'GET', bankHeaders(token), null)); });
 app.post('/pagamento/listar', async (req, res) => { const { token, codigoTransacao, dataInicio, dataFim, filtrarDataPor, tipoPagamento, situacao, pagina, tamanhoPagina } = req.body; await proxy(res, () => interRequest('/banking/v2/pagamento' + qs({ codigoTransacao, filtrarDataPor: filtrarDataPor||'INCLUSAO', dataInicio, dataFim, tipoPagamento, situacao, pagina, tamanhoPagina }), 'GET', bankHeaders(token), null)); });
 app.post('/pagamento/comprovante', async (req, res) => { const { token, codigoTransacao } = req.body; await proxy(res, () => interRequest('/banking/v2/pagamento/' + codigoTransacao + '/comprovante', 'GET', bankHeaders(token), null)); });
+app.post('/pix/listar', async (req, res) => { const { token, inicio, fim, cpf, cnpj, txId, pagina, tamanhoPagina } = req.body; await proxy(res, () => interRequest('/pix/v2/pix' + qs({ inicio, fim, cpf, cnpj, txId, pagina, tamanhoPagina }), 'GET', bankHeaders(token), null)); });
+app.post('/pix/consultar', async (req, res) => { const { token, e2eId } = req.body; await proxy(res, () => interRequest('/pix/v2/pix/' + e2eId, 'GET', bankHeaders(token), null)); });
+app.post('/pix/devolucao/solicitar', async (req, res) => { const { token, e2eId, id, valor } = req.body; const bodyStr = JSON.stringify({ valor }); await proxy(res, () => interRequest('/pix/v2/pix/' + e2eId + '/devolucao/' + id, 'PUT', { ...bankHeaders(token), 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(bodyStr).toString() }, bodyStr)); });
+app.post('/pix/devolucao/consultar', async (req, res) => { const { token, e2eId, id } = req.body; await proxy(res, () => interRequest('/pix/v2/pix/' + e2eId + '/devolucao/' + id, 'GET', bankHeaders(token), null)); });
 app.listen(process.env.PORT || 3000, () => console.log(`Proxy Inter rodando na porta ${process.env.PORT || 3000}`));
+
 
 
 
