@@ -102,7 +102,9 @@ app.post('/pix/consultar', async (req, res) => { const { token, e2eId } = req.bo
 app.post('/pix/devolucao/solicitar', async (req, res) => { const { token, e2eId, id, valor } = req.body; const bodyStr = JSON.stringify({ valor }); await proxy(res, () => interRequest('/pix/v2/pix/' + e2eId + '/devolucao/' + id, 'PUT', { ...bankHeaders(token), 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(bodyStr).toString() }, bodyStr)); });
 app.post('/pix/devolucao/consultar', async (req, res) => { const { token, e2eId, id } = req.body; await proxy(res, () => interRequest('/pix/v2/pix/' + e2eId + '/devolucao/' + id, 'GET', bankHeaders(token), null)); });
 app.post('/pagamento/pagar', async (req, res) => { const { token, codBarraLinhaDigitavel, valorPagar, dataPagamento, dataVencimento } = req.body; const bodyStr = JSON.stringify({ codBarraLinhaDigitavel, valorPagar, dataPagamento, dataVencimento }); await proxy(res, () => interRequest('/banking/v2/pagamento', 'POST', { ...bankHeaders(token), 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(bodyStr).toString() }, bodyStr)); });
+app.post('/pix/pagar', async (req, res) => { const { token, valor, descricao, destinatario, dataPagamento } = req.body; const idempotente = require('crypto').randomUUID(); const bodyStr = JSON.stringify({ valor, descricao, dataPagamento, destinatario }); await proxy(res, () => interRequest('/banking/v2/pix', 'POST', { ...bankHeaders(token), 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(bodyStr).toString(), 'x-id-idempotente': idempotente }, bodyStr)); });
 app.listen(process.env.PORT || 3000, () => console.log(`Proxy Inter rodando na porta ${process.env.PORT || 3000}`));
+
 
 
 
